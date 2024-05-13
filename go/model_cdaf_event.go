@@ -18,14 +18,7 @@ type CdafEvent struct {
 
 	Type CdafEventType `json:"type"`
 
-	ImmediateFlag bool `json:"immediateFlag,omitempty"`
-
-	AreaList []CdafEventArea `json:"areaList,omitempty"`
-
 	MaxReports int32 `json:"maxReports,omitempty"`
-
-	// A map(list of key-value pairs) where praId serves as key.
-	PresenceInfoList map[string]PresenceInfo `json:"presenceInfoList,omitempty"`
 
 	// indicating a time in seconds.
 	MaxResponseTime int32 `json:"maxResponseTime,omitempty"`
@@ -35,8 +28,6 @@ type CdafEvent struct {
 
 	// string with format 'date-time' as defined in OpenAPI.
 	NextReport time.Time `json:"nextReport,omitempty"`
-
-	IdleStatusInd bool `json:"idleStatusInd,omitempty"`
 
 	// string with format 'date-time' as defined in OpenAPI.
 	NextPeriodicReportTime time.Time `json:"nextPeriodicReportTime,omitempty"`
@@ -55,11 +46,6 @@ func AssertCdafEventRequired(obj CdafEvent) error {
 
 	if err := AssertCdafEventTypeRequired(obj.Type); err != nil {
 		return err
-	}
-	for _, el := range obj.AreaList {
-		if err := AssertCdafEventAreaRequired(el); err != nil {
-			return err
-		}
 	}
 	return nil
 }

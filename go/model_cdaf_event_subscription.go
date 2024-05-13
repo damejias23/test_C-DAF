@@ -17,18 +17,6 @@ type CdafEventSubscription struct {
 	// String providing an URI formatted according to RFC 3986.
 	EventNotifyUri string `json:"eventNotifyUri"`
 
-	NotifyCorrelationId string `json:"notifyCorrelationId"`
-
-	// String uniquely identifying a NF instance. The format of the NF Instance ID shall be a  Universally Unique Identifier (UUID) version 4, as described in IETF RFC 4122.  
-	NfId string `json:"nfId"`
-
-	// String providing an URI formatted according to RFC 3986.
-	SubsChangeNotifyUri string `json:"subsChangeNotifyUri,omitempty"`
-
-	SubsChangeNotifyCorrelationId string `json:"subsChangeNotifyCorrelationId,omitempty"`
-
-	AnyUE bool `json:"anyUE,omitempty"`
-
 	Options CdafEventMode `json:"options,omitempty"`
 }
 
@@ -37,8 +25,6 @@ func AssertCdafEventSubscriptionRequired(obj CdafEventSubscription) error {
 	elements := map[string]interface{}{
 		"eventList": obj.EventList,
 		"eventNotifyUri": obj.EventNotifyUri,
-		"notifyCorrelationId": obj.NotifyCorrelationId,
-		"nfId": obj.NfId,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

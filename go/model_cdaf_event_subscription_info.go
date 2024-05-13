@@ -15,8 +15,6 @@ type CdafEventSubscriptionInfo struct {
 	// String providing an URI formatted according to RFC 3986.
 	SubId string `json:"subId"`
 
-	NotifyCorrelationId string `json:"notifyCorrelationId,omitempty"`
-
 	// String providing an URI formatted according to RFC 3986.
 	OldSubId string `json:"oldSubId,omitempty"`
 }

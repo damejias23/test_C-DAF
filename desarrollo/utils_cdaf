@@ -1,0 +1,71 @@
+package utilis_cadf
+
+import (
+	"context"
+	"log"
+	"time"
+
+	"github.com/kelseyhightower/envconfig"
+)
+
+// ------------------------------------------------------------------------------
+// InitConfig - Initialize global variables (cfg and mongoClient) and subscribe to C-DAF
+func InitConfig() {
+	err := envconfig.Process("", &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	clientOptions := options.Client().ApplyURI(config.Database.Uri)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Connected to MongoDB.")
+	mongoClient = client
+	// Subscribe to all event notifications from C-DAF
+	cdafEventSubscription(
+		config.Server.NotifUri+config.Cdaf.ApiRoute,
+		config.Cdaf.NotifCorrId,
+		config.Cdaf.NotifId,
+	)
+}
+
+// ------------------------------------------------------------------------------
+func cdafEventSubscription(
+	cdafEventNotifyUri string,
+	cdafNotifyCorrelationId string,
+	cdafNfId string,
+) {
+	// Store all C-DAF event types
+	var cdafEvents []cdaf_client.CdafEvent
+	for _, cdafEventTypeAnyOf := range cdaf_client.AllowedCdafEventTypeAnyOfEnumValues {
+		cdafEvents = append(cdafEvents, *cdaf_client.NewCdafEvent(cdafEventTypeAnyOf))
+	}
+	// Subscribe to all C-DAF event types
+	cdafCreateEventSubscription := *cdaf_client.NewCdafCreateEventSubscription(
+		*cdaf_client.NewCdafEventSubscription(
+			cdafEvents,
+			cdafEventNotifyUri,
+			cdafNotifyCorrelationId,
+			cdafNfId,
+		),
+	)
+	configuration := cdaf_client.NewConfiguration()
+	cdafApiClient := cdaf_client.NewAPIClient(configuration)
+	resp, r, err := cdafApiClient.SubscriptionsCollectionCollectionApi.CreateSubscription(
+		context.Background()).CdafCreateEventSubscription(cdafCreateEventSubscription).Execute()
+	if err != nil {
+		log.Printf(
+			"Error when calling `SubscriptionsCollectionCollectionApi.CreateSubscription``: %v\n",
+			err,
+		)
+		log.Printf("Full HTTP response: %v\n", r)
+	}
+	// response from `CreateSubscription`: CdafCreatedEventSubscription
+	log.Printf(
+		"Response from `SubscriptionsCollectionCollectionApi.CreateSubscription`: %v\n",
+		resp,
+	)
+}

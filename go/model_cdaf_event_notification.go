@@ -12,10 +12,6 @@ package openapi
 // CdafEventNotification - Data within a CADF Event Notification request
 type CdafEventNotification struct {
 
-	NotifyCorrelationId string `json:"notifyCorrelationId,omitempty"`
-
-	SubsChangeNotifyCorrelationId string `json:"subsChangeNotifyCorrelationId,omitempty"`
-
 	ReportList []CdafEventReport `json:"reportList,omitempty"`
 
 	EventSubsSyncInfo CdafEventSubsSyncInfo `json:"eventSubsSyncInfo,omitempty"`
