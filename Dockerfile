@@ -7,6 +7,7 @@ COPY go.mod .
 
 ENV CGO_ENABLED=0
 
+RUN go get github.com/damejias23/test_C-DAF
 RUN go build -o openapi .
 
 FROM alpine:3.18 AS runtime

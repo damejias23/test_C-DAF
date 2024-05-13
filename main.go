@@ -12,12 +12,32 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	openapi "github.com/damejias23/test_C-DAF/go"
+	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
 )
 
+type MainConfig struct {
+	Server struct {
+		Addr string `envconfig:"SERVER_ADDR"`
+	}
+}
+
 func main() {
-	log.Printf("Server started")
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	var config MainConfig
+	err = envconfig.Process("", &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	// log.Printf("Server started")
+	// events.InitConfig()
 
 	IndividualSubscriptionDocumentApiService := openapi.NewIndividualSubscriptionDocumentApiService()
 	IndividualSubscriptionDocumentApiController := openapi.NewIndividualSubscriptionDocumentApiController(IndividualSubscriptionDocumentApiService)
@@ -27,5 +47,15 @@ func main() {
 
 	router := openapi.NewRouter(IndividualSubscriptionDocumentApiController, SubscriptionsCollectionCollectionApiController)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	// log.Fatal(http.ListenAndServe(":8080", router))
+
+	server := &http.Server{
+		Addr:         config.Server.Addr,
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	log.Printf("Server listening at %s", config.Server.Addr)
+	log.Fatal(server.ListenAndServe())
+
 }
