@@ -1,5 +1,5 @@
-module github.com/GIT_USER_ID/GIT_REPO_ID
+module github.com/damejias23/test_C-DAF
 
 go 1.13
 
-require github.com/gorilla/mux v1.7.3
+require github.com/gorilla/mux v1.8.1
