@@ -28,10 +28,6 @@ type CdafEventMode struct {
 
 	// Unsigned integer indicating Sampling Ratio (see clauses 4.15.1 of 3GPP TS 23.502), expressed in percent.  
 	SampRatio int32 `json:"sampRatio,omitempty"`
-
-	PartitioningCriteria []PartitioningCriteria `json:"partitioningCriteria,omitempty"`
-
-	NotifFlag NotificationFlag `json:"notifFlag,omitempty"`
 }
 
 // AssertCdafEventModeRequired checks if the required fields are not zero-ed
@@ -46,14 +42,6 @@ func AssertCdafEventModeRequired(obj CdafEventMode) error {
 	}
 
 	if err := AssertCdafEventTriggerRequired(obj.Trigger); err != nil {
-		return err
-	}
-	for _, el := range obj.PartitioningCriteria {
-		if err := AssertPartitioningCriteriaRequired(el); err != nil {
-			return err
-		}
-	}
-	if err := AssertNotificationFlagRequired(obj.NotifFlag); err != nil {
 		return err
 	}
 	return nil

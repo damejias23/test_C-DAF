@@ -14,26 +14,15 @@ type CdafUpdateEventSubscriptionItem struct {
 
 	Op string `json:"op"`
 
-	Path string `json:"path"`
+	Path string `json:"path,omitempty"`
 
 	Value CdafEvent `json:"value,omitempty"`
-
-	PresenceInfo PresenceInfo `json:"presenceInfo,omitempty"`
-
-	ExcludeSupiList []string `json:"excludeSupiList,omitempty"`
-
-	ExcludeGpsiList []string `json:"excludeGpsiList,omitempty"`
-
-	IncludeSupiList []string `json:"includeSupiList,omitempty"`
-
-	IncludeGpsiList []string `json:"includeGpsiList,omitempty"`
 }
 
 // AssertCdafUpdateEventSubscriptionItemRequired checks if the required fields are not zero-ed
 func AssertCdafUpdateEventSubscriptionItemRequired(obj CdafUpdateEventSubscriptionItem) error {
 	elements := map[string]interface{}{
 		"op": obj.Op,
-		"path": obj.Path,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
@@ -42,9 +31,6 @@ func AssertCdafUpdateEventSubscriptionItemRequired(obj CdafUpdateEventSubscripti
 	}
 
 	if err := AssertCdafEventRequired(obj.Value); err != nil {
-		return err
-	}
-	if err := AssertPresenceInfoRequired(obj.PresenceInfo); err != nil {
 		return err
 	}
 	return nil

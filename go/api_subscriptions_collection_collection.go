@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gorilla/mux"
 )
 
 // SubscriptionsCollectionCollectionApiController binds http requests to an api service and writes the service results to the http response
