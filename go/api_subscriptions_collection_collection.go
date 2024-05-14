@@ -11,6 +11,7 @@ package openapi
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -62,6 +63,7 @@ func (c *SubscriptionsCollectionCollectionApiController) CreateSubscription(w ht
 	cdafCreateEventSubscriptionParam := CdafCreateEventSubscription{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
+	log.Println(w)
 	if err := d.Decode(&cdafCreateEventSubscriptionParam); err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
