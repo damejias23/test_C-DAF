@@ -12,5 +12,7 @@ RUN go build -o openapi .
 
 FROM alpine:3.18 AS runtime
 COPY --from=build /go/src/openapi ./
-EXPOSE 8080/tcp
+COPY .env ./
+EXPOSE 8080/tcp 8882/tcp 3000
+
 ENTRYPOINT ["./openapi"]

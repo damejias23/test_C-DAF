@@ -12,7 +12,7 @@ package openapi
 // CdafEventSubscription - Represents an individual event subscription resource on CDAF
 type CdafEventSubscription struct {
 
-	EventList []CdafEvent `json:"eventList"`
+	EventRequest CdafEvent `json:"eventRequest"`
 
 	// String providing an URI formatted according to RFC 3986.
 	EventNotifyUri string `json:"eventNotifyUri"`
@@ -23,7 +23,7 @@ type CdafEventSubscription struct {
 // AssertCdafEventSubscriptionRequired checks if the required fields are not zero-ed
 func AssertCdafEventSubscriptionRequired(obj CdafEventSubscription) error {
 	elements := map[string]interface{}{
-		"eventList": obj.EventList,
+		"eventRequest": obj.EventRequest,
 		"eventNotifyUri": obj.EventNotifyUri,
 	}
 	for name, el := range elements {
@@ -32,10 +32,8 @@ func AssertCdafEventSubscriptionRequired(obj CdafEventSubscription) error {
 		}
 	}
 
-	for _, el := range obj.EventList {
-		if err := AssertCdafEventRequired(el); err != nil {
-			return err
-		}
+	if err := AssertCdafEventRequired(obj.EventRequest); err != nil {
+		return err
 	}
 	if err := AssertCdafEventModeRequired(obj.Options); err != nil {
 		return err

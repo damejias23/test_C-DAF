@@ -12,17 +12,15 @@ package openapi
 // CdafEventNotification - Data within a CADF Event Notification request
 type CdafEventNotification struct {
 
-	ReportList []CdafEventReport `json:"reportList,omitempty"`
+	ReportEvent CdafEventReport `json:"reportEvent,omitempty"`
 
 	EventSubsSyncInfo CdafEventSubsSyncInfo `json:"eventSubsSyncInfo,omitempty"`
 }
 
 // AssertCdafEventNotificationRequired checks if the required fields are not zero-ed
 func AssertCdafEventNotificationRequired(obj CdafEventNotification) error {
-	for _, el := range obj.ReportList {
-		if err := AssertCdafEventReportRequired(el); err != nil {
-			return err
-		}
+	if err := AssertCdafEventReportRequired(obj.ReportEvent); err != nil {
+		return err
 	}
 	if err := AssertCdafEventSubsSyncInfoRequired(obj.EventSubsSyncInfo); err != nil {
 		return err

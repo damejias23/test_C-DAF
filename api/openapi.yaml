@@ -139,14 +139,8 @@ components:
       description: Represents an individual event subscription resource on CDAF
       example:
         eventNotifyUri: eventNotifyUri
-        eventList:
-        - maxResponseTime: 6
-          minInterval: 1
-          nextReport: 2000-01-23T04:56:07.000+00:00
-          nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
-          type: null
-          maxReports: 0
-        - maxResponseTime: 6
+        eventRequest:
+          maxResponseTime: 6
           minInterval: 1
           nextReport: 2000-01-23T04:56:07.000+00:00
           nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
@@ -159,19 +153,16 @@ components:
           repPeriod: 5
           sampRatio: 23
       properties:
-        eventList:
-          items:
-            $ref: '#/components/schemas/CdafEvent'
-          minItems: 1
-          type: array
+        eventRequest:
+          $ref: '#/components/schemas/CdafEvent'
         eventNotifyUri:
           description: String providing an URI formatted according to RFC 3986.
           type: string
         options:
           $ref: '#/components/schemas/CdafEventMode'
       required:
-      - eventList
       - eventNotifyUri
+      - eventRequest
       type: object
     CdafEvent:
       description: Describes an event to be subscribed
@@ -208,21 +199,11 @@ components:
       description: Data within a CADF Event Notification request
       example:
         eventSubsSyncInfo:
-          subscriptionList:
-          - subId: subId
+          subscriptionInfo:
+            subId: subId
             oldSubId: oldSubId
-          - subId: subId
-            oldSubId: oldSubId
-        reportList:
-        - timeStamp: 2000-01-23T04:56:07.000+00:00
-          path: path
-          state:
-            remainDuration: 9
-            active: true
-            remainReports: 7
-          type: null
-          subscriptionId: subscriptionId
-        - timeStamp: 2000-01-23T04:56:07.000+00:00
+        reportEvent:
+          timeStamp: 2000-01-23T04:56:07.000+00:00
           path: path
           state:
             remainDuration: 9
@@ -231,11 +212,8 @@ components:
           type: null
           subscriptionId: subscriptionId
       properties:
-        reportList:
-          items:
-            $ref: '#/components/schemas/CdafEventReport'
-          minItems: 1
-          type: array
+        reportEvent:
+          $ref: '#/components/schemas/CdafEventReport'
         eventSubsSyncInfo:
           $ref: '#/components/schemas/CdafEventSubsSyncInfo'
       type: object
@@ -320,14 +298,8 @@ components:
       example:
         subscription:
           eventNotifyUri: eventNotifyUri
-          eventList:
-          - maxResponseTime: 6
-            minInterval: 1
-            nextReport: 2000-01-23T04:56:07.000+00:00
-            nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
-            type: null
-            maxReports: 0
-          - maxResponseTime: 6
+          eventRequest:
+            maxResponseTime: 6
             minInterval: 1
             nextReport: 2000-01-23T04:56:07.000+00:00
             nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
@@ -348,16 +320,8 @@ components:
     CdafCreatedEventSubscription:
       description: Data within a create CDAF event subscription response
       example:
-        reportList:
-        - timeStamp: 2000-01-23T04:56:07.000+00:00
-          path: path
-          state:
-            remainDuration: 9
-            active: true
-            remainReports: 7
-          type: null
-          subscriptionId: subscriptionId
-        - timeStamp: 2000-01-23T04:56:07.000+00:00
+        reportEvent:
+          timeStamp: 2000-01-23T04:56:07.000+00:00
           path: path
           state:
             remainDuration: 9
@@ -367,14 +331,8 @@ components:
           subscriptionId: subscriptionId
         subscription:
           eventNotifyUri: eventNotifyUri
-          eventList:
-          - maxResponseTime: 6
-            minInterval: 1
-            nextReport: 2000-01-23T04:56:07.000+00:00
-            nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
-            type: null
-            maxReports: 0
-          - maxResponseTime: 6
+          eventRequest:
+            maxResponseTime: 6
             minInterval: 1
             nextReport: 2000-01-23T04:56:07.000+00:00
             nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
@@ -393,11 +351,8 @@ components:
         subscriptionId:
           description: String providing an URI formatted according to RFC 3986.
           type: string
-        reportList:
-          items:
-            $ref: '#/components/schemas/CdafEventReport'
-          minItems: 1
-          type: array
+        reportEvent:
+          $ref: '#/components/schemas/CdafEventReport'
       required:
       - subscription
       - subscriptionId
@@ -424,16 +379,8 @@ components:
     CdafUpdatedEventSubscription:
       description: Represents a successful update on an CDAF Event Subscription
       example:
-        reportList:
-        - timeStamp: 2000-01-23T04:56:07.000+00:00
-          path: path
-          state:
-            remainDuration: 9
-            active: true
-            remainReports: 7
-          type: null
-          subscriptionId: subscriptionId
-        - timeStamp: 2000-01-23T04:56:07.000+00:00
+        reportEvent:
+          timeStamp: 2000-01-23T04:56:07.000+00:00
           path: path
           state:
             remainDuration: 9
@@ -443,14 +390,8 @@ components:
           subscriptionId: subscriptionId
         subscription:
           eventNotifyUri: eventNotifyUri
-          eventList:
-          - maxResponseTime: 6
-            minInterval: 1
-            nextReport: 2000-01-23T04:56:07.000+00:00
-            nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
-            type: null
-            maxReports: 0
-          - maxResponseTime: 6
+          eventRequest:
+            maxResponseTime: 6
             minInterval: 1
             nextReport: 2000-01-23T04:56:07.000+00:00
             nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
@@ -465,30 +406,22 @@ components:
       properties:
         subscription:
           $ref: '#/components/schemas/CdafEventSubscription'
-        reportList:
-          items:
-            $ref: '#/components/schemas/CdafEventReport'
-          minItems: 1
-          type: array
+        reportEvent:
+          $ref: '#/components/schemas/CdafEventReport'
       required:
       - subscription
       type: object
     CdafEventSubsSyncInfo:
       description: CDAF Event Subscriptions Information for synchronization
       example:
-        subscriptionList:
-        - subId: subId
-          oldSubId: oldSubId
-        - subId: subId
+        subscriptionInfo:
+          subId: subId
           oldSubId: oldSubId
       properties:
-        subscriptionList:
-          items:
-            $ref: '#/components/schemas/CdafEventSubscriptionInfo'
-          minItems: 1
-          type: array
+        subscriptionInfo:
+          $ref: '#/components/schemas/CdafEventSubscriptionInfo'
       required:
-      - subscriptionList
+      - subscriptionInfo
       type: object
     CdafEventSubscriptionInfo:
       description: Individual CDAF Event Subscription Information

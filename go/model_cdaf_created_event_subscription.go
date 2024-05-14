@@ -17,7 +17,7 @@ type CdafCreatedEventSubscription struct {
 	// String providing an URI formatted according to RFC 3986.
 	SubscriptionId string `json:"subscriptionId"`
 
-	ReportList []CdafEventReport `json:"reportList,omitempty"`
+	ReportEvent CdafEventReport `json:"reportEvent,omitempty"`
 }
 
 // AssertCdafCreatedEventSubscriptionRequired checks if the required fields are not zero-ed
@@ -35,10 +35,8 @@ func AssertCdafCreatedEventSubscriptionRequired(obj CdafCreatedEventSubscription
 	if err := AssertCdafEventSubscriptionRequired(obj.Subscription); err != nil {
 		return err
 	}
-	for _, el := range obj.ReportList {
-		if err := AssertCdafEventReportRequired(el); err != nil {
-			return err
-		}
+	if err := AssertCdafEventReportRequired(obj.ReportEvent); err != nil {
+		return err
 	}
 	return nil
 }

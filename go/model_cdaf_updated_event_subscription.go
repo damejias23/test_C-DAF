@@ -14,7 +14,7 @@ type CdafUpdatedEventSubscription struct {
 
 	Subscription CdafEventSubscription `json:"subscription"`
 
-	ReportList []CdafEventReport `json:"reportList,omitempty"`
+	ReportEvent CdafEventReport `json:"reportEvent,omitempty"`
 }
 
 // AssertCdafUpdatedEventSubscriptionRequired checks if the required fields are not zero-ed
@@ -31,10 +31,8 @@ func AssertCdafUpdatedEventSubscriptionRequired(obj CdafUpdatedEventSubscription
 	if err := AssertCdafEventSubscriptionRequired(obj.Subscription); err != nil {
 		return err
 	}
-	for _, el := range obj.ReportList {
-		if err := AssertCdafEventReportRequired(el); err != nil {
-			return err
-		}
+	if err := AssertCdafEventReportRequired(obj.ReportEvent); err != nil {
+		return err
 	}
 	return nil
 }
