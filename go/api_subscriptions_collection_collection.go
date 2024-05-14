@@ -66,7 +66,7 @@ func (c *SubscriptionsCollectionCollectionApiController) CreateSubscription(w ht
 	d.DisallowUnknownFields()
 	if err := d.Decode(&cdafCreateEventSubscriptionParam); err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		log.Println("Error 12")
+		log.Println(err)
 		return
 	}
 	if err := AssertCdafCreateEventSubscriptionRequired(cdafCreateEventSubscriptionParam); err != nil {
