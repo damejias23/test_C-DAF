@@ -62,7 +62,6 @@ func (c *SubscriptionsCollectionCollectionApiController) Routes() Routes {
 func (c *SubscriptionsCollectionCollectionApiController) CreateSubscription(w http.ResponseWriter, r *http.Request) {
 	cdafCreateEventSubscriptionParam := CdafCreateEventSubscription{}
 	d := json.NewDecoder(r.Body)
-	log.Println(d)
 	d.DisallowUnknownFields()
 	if err := d.Decode(&cdafCreateEventSubscriptionParam); err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
@@ -71,14 +70,14 @@ func (c *SubscriptionsCollectionCollectionApiController) CreateSubscription(w ht
 	}
 	if err := AssertCdafCreateEventSubscriptionRequired(cdafCreateEventSubscriptionParam); err != nil {
 		c.errorHandler(w, r, err, nil)
-		log.Println("Error 2")
+		log.Println(err)
 		return
 	}
 	result, err := c.service.CreateSubscription(r.Context(), cdafCreateEventSubscriptionParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
-		log.Println("Error 3")
+		log.Println(err)
 		return
 	}
 	// If no error, encode the body and the result code
