@@ -42,7 +42,7 @@ func (s *SubscriptionsCollectionCollectionApiService) CreateSubscription(ctx con
 
 	//TODO: Uncomment the next line to return response Response(0, {}) or use other options such as http.Ok ...
 	//return Response(0, nil),nil
-
+	log.Printf("HOLA?")
 	subscriptionId := uuid.New().String()
 	subscriptionCh := make(chan string)
 	// add subscription channel to mapping table
