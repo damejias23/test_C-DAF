@@ -104,35 +104,6 @@ paths:
       summary: Ncdaf_EventExposure Unsubscribe service Operation
       tags:
       - Individual subscription (Document)
-    patch:
-      operationId: ModifySubscription
-      parameters:
-      - description: Unique ID of the subscription to be modified
-        explode: false
-        in: path
-        name: subscriptionId
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json-patch+json:
-            schema:
-              $ref: '#/components/schemas/ModifySubscription_request'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CdafUpdatedEventSubscription'
-          description: Subsription modified successfully
-        default:
-          description: Unexpected error
-      summary: Ncdaf_EventExposure Subscribe Modify service Operation
-      tags:
-      - Individual subscription (Document)
 components:
   schemas:
     CdafEventSubscription:
@@ -204,7 +175,19 @@ components:
             oldSubId: oldSubId
         reportEvent:
           timeStamp: 2000-01-23T04:56:07.000+00:00
-          path: path
+          nfLoadLevelInfos:
+          - nfInstanceId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            nfStorageUsage: 4
+            nfCpuUsage: 3
+            nfType: null
+            nfSetId: nfSetId
+            nfMemoryUsage: 2
+          - nfInstanceId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            nfStorageUsage: 4
+            nfCpuUsage: 3
+            nfType: null
+            nfSetId: nfSetId
+            nfMemoryUsage: 2
           state:
             remainDuration: 9
             active: true
@@ -221,7 +204,19 @@ components:
       description: Represents a report triggered by a subscribed event type
       example:
         timeStamp: 2000-01-23T04:56:07.000+00:00
-        path: path
+        nfLoadLevelInfos:
+        - nfInstanceId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          nfStorageUsage: 4
+          nfCpuUsage: 3
+          nfType: null
+          nfSetId: nfSetId
+          nfMemoryUsage: 2
+        - nfInstanceId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          nfStorageUsage: 4
+          nfCpuUsage: 3
+          nfType: null
+          nfSetId: nfSetId
+          nfMemoryUsage: 2
         state:
           remainDuration: 9
           active: true
@@ -240,8 +235,11 @@ components:
         subscriptionId:
           description: String providing an URI formatted according to RFC 3986.
           type: string
-        path:
-          type: string
+        nfLoadLevelInfos:
+          items:
+            $ref: '#/components/schemas/NfLoadLevelInformation'
+          minItems: 1
+          type: array
       required:
       - state
       - timeStamp
@@ -322,7 +320,19 @@ components:
       example:
         reportEvent:
           timeStamp: 2000-01-23T04:56:07.000+00:00
-          path: path
+          nfLoadLevelInfos:
+          - nfInstanceId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            nfStorageUsage: 4
+            nfCpuUsage: 3
+            nfType: null
+            nfSetId: nfSetId
+            nfMemoryUsage: 2
+          - nfInstanceId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            nfStorageUsage: 4
+            nfCpuUsage: 3
+            nfType: null
+            nfSetId: nfSetId
+            nfMemoryUsage: 2
           state:
             remainDuration: 9
             active: true
@@ -357,60 +367,6 @@ components:
       - subscription
       - subscriptionId
       type: object
-    CdafUpdateEventSubscriptionItem:
-      description: Document describing the modification(s) to an CDAF Event Subscription
-      properties:
-        op:
-          enum:
-          - add
-          - remove
-          - replace
-          type: string
-        path:
-          pattern: "^\\/eventList\\/-|(\\/eventList\\/0|\\/eventList\\/[1-9][0-9]*){1}(\\\
-            /presenceInfoList\\/0|\\/presenceInfoList\\/[1-9][0-9]*)?|\\/excludeSupiList|\\\
-            /excludeGpsiList|\\/includeSupiList|\\/includeGpsiList$"
-          type: string
-        value:
-          $ref: '#/components/schemas/CdafEvent'
-      required:
-      - op
-      type: object
-    CdafUpdatedEventSubscription:
-      description: Represents a successful update on an CDAF Event Subscription
-      example:
-        reportEvent:
-          timeStamp: 2000-01-23T04:56:07.000+00:00
-          path: path
-          state:
-            remainDuration: 9
-            active: true
-            remainReports: 7
-          type: null
-          subscriptionId: subscriptionId
-        subscription:
-          eventNotifyUri: eventNotifyUri
-          eventRequest:
-            maxResponseTime: 6
-            minInterval: 1
-            nextReport: 2000-01-23T04:56:07.000+00:00
-            nextPeriodicReportTime: 2000-01-23T04:56:07.000+00:00
-            type: null
-            maxReports: 0
-          options:
-            trigger: null
-            expiry: 2000-01-23T04:56:07.000+00:00
-            maxReports: 5
-            repPeriod: 5
-            sampRatio: 23
-      properties:
-        subscription:
-          $ref: '#/components/schemas/CdafEventSubscription'
-        reportEvent:
-          $ref: '#/components/schemas/CdafEventReport'
-      required:
-      - subscription
-      type: object
     CdafEventSubsSyncInfo:
       description: CDAF Event Subscriptions Information for synchronization
       example:
@@ -438,6 +394,57 @@ components:
       required:
       - subId
       type: object
+    NfLoadLevelInformation:
+      allOf:
+      - required:
+        - nfType
+      - required:
+        - nfInstanceId
+      - anyOf:
+        - required:
+          - nfCpuUsage
+        - required:
+          - nfMemoryUsage
+        - required:
+          - nfStorageUsage
+      description: Represents load level information of a given NF instance.
+      example:
+        nfInstanceId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        nfStorageUsage: 4
+        nfCpuUsage: 3
+        nfType: null
+        nfSetId: nfSetId
+        nfMemoryUsage: 2
+      properties:
+        nfType:
+          $ref: '#/components/schemas/NFType'
+        nfInstanceId:
+          description: "String uniquely identifying a NF instance. The format of the\
+            \ NF Instance ID shall be a  Universally Unique Identifier (UUID) version\
+            \ 4, as described in IETF RFC 4122. \n"
+          format: uuid
+          type: string
+        nfSetId:
+          description: "NF Set Identifier (see clause 28.12 of 3GPP TS 23.003), formatted\
+            \ as the following string \"set<Set ID>.<nftype>set.5gc.mnc<MNC>.mcc<MCC>\"\
+            , or  \"set<SetID>.<NFType>set.5gc.nid<NID>.mnc<MNC>.mcc<MCC>\" with \
+            \ <MCC> encoded as defined in clause 5.4.2 (\"Mcc\" data type definition)\
+            \  <MNC> encoding the Mobile Network Code part of the PLMN, comprising\
+            \ 3 digits. \n  If there are only 2 significant digits in the MNC, one\
+            \ \"0\" digit shall be inserted \n  at the left side to fill the 3 digits\
+            \ coding of MNC.  Pattern: '^[0-9]{3}$'\n<NFType> encoded as a value defined\
+            \ in Table 6.1.6.3.3-1 of 3GPP TS 29.510 but \n  with lower case characters\
+            \ <Set ID> encoded as a string of characters consisting of \n  alphabetic\
+            \ characters (A-Z and a-z), digits (0-9) and/or the hyphen (-) and that\
+            \ \n  shall end with either an alphabetic character or a digit. \n"
+          type: string
+        nfCpuUsage:
+          type: integer
+        nfMemoryUsage:
+          type: integer
+        nfStorageUsage:
+          type: integer
+      type: object
     CdafEventType:
       anyOf:
       - $ref: '#/components/schemas/CdafEventType_anyOf'
@@ -448,12 +455,31 @@ components:
       - $ref: '#/components/schemas/CdafEventTrigger_anyOf'
       - type: string
       description: Describes how CDAF should generate the report for the event
-    ModifySubscription_request:
-      oneOf:
-      - items:
-          $ref: '#/components/schemas/CdafUpdateEventSubscriptionItem'
-        minItems: 1
-        type: array
+    NFType:
+      anyOf:
+      - $ref: '#/components/schemas/NFType_anyOf'
+      - type: string
+      description: NF types known to NRF
+    NfInstanceId:
+      description: "String uniquely identifying a NF instance. The format of the NF\
+        \ Instance ID shall be a  Universally Unique Identifier (UUID) version 4,\
+        \ as described in IETF RFC 4122. \n"
+      format: uuid
+      type: string
+    NfSetId:
+      description: "NF Set Identifier (see clause 28.12 of 3GPP TS 23.003), formatted\
+        \ as the following string \"set<Set ID>.<nftype>set.5gc.mnc<MNC>.mcc<MCC>\"\
+        , or  \"set<SetID>.<NFType>set.5gc.nid<NID>.mnc<MNC>.mcc<MCC>\" with  <MCC>\
+        \ encoded as defined in clause 5.4.2 (\"Mcc\" data type definition)  <MNC>\
+        \ encoding the Mobile Network Code part of the PLMN, comprising 3 digits.\
+        \ \n  If there are only 2 significant digits in the MNC, one \"0\" digit shall\
+        \ be inserted \n  at the left side to fill the 3 digits coding of MNC.  Pattern:\
+        \ '^[0-9]{3}$'\n<NFType> encoded as a value defined in Table 6.1.6.3.3-1 of\
+        \ 3GPP TS 29.510 but \n  with lower case characters <Set ID> encoded as a\
+        \ string of characters consisting of \n  alphabetic characters (A-Z and a-z),\
+        \ digits (0-9) and/or the hyphen (-) and that \n  shall end with either an\
+        \ alphabetic character or a digit. \n"
+      type: string
     CdafEventType_anyOf:
       enum:
       - REPORT_RESOURCE_USAGE
@@ -463,6 +489,67 @@ components:
       - ONE_TIME
       - CONTINUOUS
       - PERIODIC
+      type: string
+    NFType_anyOf:
+      enum:
+      - NRF
+      - UDM
+      - AMF
+      - SMF
+      - AUSF
+      - NEF
+      - PCF
+      - SMSF
+      - NSSF
+      - UDR
+      - LMF
+      - GMLC
+      - 5G_EIR
+      - SEPP
+      - UPF
+      - N3IWF
+      - AF
+      - UDSF
+      - BSF
+      - CHF
+      - NWDAF
+      - PCSCF
+      - CBCF
+      - HSS
+      - UCMF
+      - SOR_AF
+      - SPAF
+      - MME
+      - SCSAS
+      - SCEF
+      - SCP
+      - NSSAAF
+      - ICSCF
+      - SCSCF
+      - DRA
+      - IMS_AS
+      - AANF
+      - 5G_DDNMF
+      - NSACF
+      - MFAF
+      - EASDF
+      - DCCF
+      - MB_SMF
+      - TSCTSF
+      - ADRF
+      - GBA_BSF
+      - CEF
+      - MB_UPF
+      - NSWOF
+      - PKMF
+      - MNPF
+      - SMS_GMSC
+      - SMS_IWMSC
+      - MBSF
+      - MBSTF
+      - PANF
+      - IP_SM_GW
+      - SMS_ROUTER
       type: string
   securitySchemes:
     oAuth2ClientCredentials:

@@ -127,12 +127,22 @@ func fillEventNotification(ctx context.Context,
 
 	case CDAFEVENT_REPORT_RESOURCE_USAGE:
 
-		// nwPerfNotifData, err := getContainerData(eventSub)
+		nwPerfNotifData, err := getContainerData(eventSub)
 
-		// if err != nil {
-		// 	return eventNotif, err
+		if err != nil {
+			return eventNotif, err
+		}
+		eventNotif.ReportEvent.NfLoadLevelInfos = nwPerfNotifData
+		// eventNotif.ReportEvent.NfLoadLevelInfos = []NfLoadLevelInformation{
+		// 	NfType: NFTYPE_AMF,
+		// 	// String uniquely identifying a NF instance. The format of the NF Instance ID shall be a  Universally Unique Identifier (UUID) version 4, as described in IETF RFC 4122.
+		// 	NfInstanceId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		// 	// NF Set Identifier (see clause 28.12 of 3GPP TS 23.003), formatted as the following string \"set<Set ID>.<nftype>set.5gc.mnc<MNC>.mcc<MCC>\", or  \"set<SetID>.<NFType>set.5gc.nid<NID>.mnc<MNC>.mcc<MCC>\" with  <MCC> encoded as defined in clause 5.4.2 (\"Mcc\" data type definition)  <MNC> encoding the Mobile Network Code part of the PLMN, comprising 3 digits.    If there are only 2 significant digits in the MNC, one \"0\" digit shall be inserted    at the left side to fill the 3 digits coding of MNC.  Pattern: '^[0-9]{3}$' <NFType> encoded as a value defined in Table 6.1.6.3.3-1 of 3GPP TS 29.510 but    with lower case characters <Set ID> encoded as a string of characters consisting of    alphabetic characters (A-Z and a-z), digits (0-9) and/or the hyphen (-) and that    shall end with either an alphabetic character or a digit.
+		// 	NfSetId:        "1235657",
+		// 	NfCpuUsage:     15,
+		// 	NfMemoryUsage:  10,
+		// 	NfStorageUsage: 100,
 		// }
-		eventNotif.ReportEvent.Path = "nwPerfNotifData"
 	default:
 		// Implement others
 		log.Print("Not implemented yet")
@@ -156,39 +166,39 @@ func sendNotification(
 }
 
 // ------------------------------------------------------------------------------
-// // getNwPerfAnalytics - Get list of NetworkPerfInfo
-// func getContainerData(eventSub CdafEventSubscription) ([]NetworkPerfInfo, error) {
-// 	log.Printf("Getting NW Performance Notification Data")
-// 	var nwPerfList []NetworkPerfInfo
-// 	for _, nwPerfReq := range eventSub.NwPerfRequs {
-// 		var nwPerfInfo NetworkPerfInfo
-// 		var err error
-// 		switch nwPerfReq.NwPerfType {
+// getNwPerfAnalytics - Get list of NetworkPerfInfo
+func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation, error) {
+	log.Printf("Getting NW Performance Notification Data")
+	var nwPerfList []NfLoadLevelInformation
+	// for _, nwPerfReq := range eventSub.NwPerfRequs {
 
-// 		case NETWORKPERFTYPE_NUM_OF_UE:
-// 			nwPerfInfo, err = requestNwPerfEngine(
-// 				eventSub,
-// 				config.Engine.Uri+config.Routes.NumOfUe,
-// 			)
-// 			if err != nil {
-// 				return nwPerfList, err
-// 			}
+	var nwPerfInfo NfLoadLevelInformation
+	// var err error
+	switch eventSub.EventRequest.Type {
 
-// 		case NETWORKPERFTYPE_SESS_SUCC_RATIO:
-// 			nwPerfInfo, err = requestNwPerfEngine(
-// 				eventSub,
-// 				config.Engine.Uri+config.Routes.SessSuccRatio,
-// 			)
-// 			if err != nil {
-// 				return nwPerfList, err
-// 			}
+	case CDAFEVENT_REPORT_RESOURCE_USAGE:
+		nwPerfInfo.NfType = "NFTYPE_AMF"
+		// String uniquely identifying a NF instance. The format of the NF Instance ID shall be a  Universally Unique Identifier (UUID) version 4, as described in IETF RFC 4122.
+		nwPerfInfo.NfInstanceId = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+		// NF Set Identifier (see clause 28.12 of 3GPP TS 23.003), formatted as the following string \"set<Set ID>.<nftype>set.5gc.mnc<MNC>.mcc<MCC>\", or  \"set<SetID>.<NFType>set.5gc.nid<NID>.mnc<MNC>.mcc<MCC>\" with  <MCC> encoded as defined in clause 5.4.2 (\"Mcc\" data type definition)  <MNC> encoding the Mobile Network Code part of the PLMN, comprising 3 digits.    If there are only 2 significant digits in the MNC, one \"0\" digit shall be inserted    at the left side to fill the 3 digits coding of MNC.  Pattern: '^[0-9]{3}$' <NFType> encoded as a value defined in Table 6.1.6.3.3-1 of 3GPP TS 29.510 but    with lower case characters <Set ID> encoded as a string of characters consisting of    alphabetic characters (A-Z and a-z), digits (0-9) and/or the hyphen (-) and that    shall end with either an alphabetic character or a digit.
+		nwPerfInfo.NfSetId = "1235657"
+		nwPerfInfo.NfCpuUsage = 15
+		nwPerfInfo.NfMemoryUsage = 10
+		nwPerfInfo.NfStorageUsage = 100
+		// nwPerfInfo, err = requestNwPerfEngine(
+		// 	eventSub,
+		// 	config.Engine.Uri+config.Routes.NumOfUe,
+		// )
+		// if err != nil {
+		// 	return nwPerfList, err
+		// }
 
-// 		default:
-// 			// TODO - Implement other NwPerfTypes
-// 			return nil, errors.New("invalid Network Performance Type")
-// 		}
-// 		nwPerfInfo.NwPerfType = nwPerfReq.NwPerfType
-// 		nwPerfList = append(nwPerfList, nwPerfInfo)
-// 	}
-// 	return nwPerfList, nil
-// }
+	default:
+		// TODO - Implement other NwPerfTypes
+		return nil, errors.New("invalid Network Performance Type")
+	}
+	// nwPerfInfo.NwPerfType = nwPerfReq.NwPerfType
+	nwPerfList = append(nwPerfList, nwPerfInfo)
+	// }
+	return nwPerfList, nil
+}

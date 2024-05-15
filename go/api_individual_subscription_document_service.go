@@ -39,17 +39,3 @@ func (s *IndividualSubscriptionDocumentApiService) DeleteSubscription(ctx contex
 
 	return Response(http.StatusNotImplemented, nil), errors.New("DeleteSubscription method not implemented")
 }
-
-// ModifySubscription - Ncdaf_EventExposure Subscribe Modify service Operation
-func (s *IndividualSubscriptionDocumentApiService) ModifySubscription(ctx context.Context, subscriptionId string, modifySubscriptionRequest ModifySubscriptionRequest) (ImplResponse, error) {
-	// TODO - update ModifySubscription with the required logic for this service method.
-	// Add api_individual_subscription_document_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, CdafUpdatedEventSubscription{}) or use other options such as http.Ok ...
-	//return Response(200, CdafUpdatedEventSubscription{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, {}) or use other options such as http.Ok ...
-	//return Response(0, nil),nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("ModifySubscription method not implemented")
-}

@@ -21,7 +21,6 @@ import (
 // pass the data to a IndividualSubscriptionDocumentApiServicer to perform the required actions, then write the service results to the http response.
 type IndividualSubscriptionDocumentApiRouter interface { 
 	DeleteSubscription(http.ResponseWriter, *http.Request)
-	ModifySubscription(http.ResponseWriter, *http.Request)
 }
 // SubscriptionsCollectionCollectionApiRouter defines the required methods for binding the api requests to a responses for the SubscriptionsCollectionCollectionApi
 // The SubscriptionsCollectionCollectionApiRouter implementation should parse necessary information from the http request,
@@ -37,7 +36,6 @@ type SubscriptionsCollectionCollectionApiRouter interface {
 // and updated with the logic required for the API.
 type IndividualSubscriptionDocumentApiServicer interface { 
 	DeleteSubscription(context.Context, string) (ImplResponse, error)
-	ModifySubscription(context.Context, string, ModifySubscriptionRequest) (ImplResponse, error)
 }
 
 

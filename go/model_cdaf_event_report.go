@@ -26,7 +26,7 @@ type CdafEventReport struct {
 	// String providing an URI formatted according to RFC 3986.
 	SubscriptionId string `json:"subscriptionId,omitempty"`
 
-	Path string `json:"path,omitempty"`
+	NfLoadLevelInfos []NfLoadLevelInformation `json:"nfLoadLevelInfos,omitempty"`
 }
 
 // AssertCdafEventReportRequired checks if the required fields are not zero-ed
@@ -47,6 +47,11 @@ func AssertCdafEventReportRequired(obj CdafEventReport) error {
 	}
 	if err := AssertCdafEventStateRequired(obj.State); err != nil {
 		return err
+	}
+	for _, el := range obj.NfLoadLevelInfos {
+		if err := AssertNfLoadLevelInformationRequired(el); err != nil {
+			return err
+		}
 	}
 	return nil
 }
