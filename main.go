@@ -37,7 +37,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	// log.Printf("Server started")
-	// events.InitConfig()
+	openapi.InitConfig()
 
 	IndividualSubscriptionDocumentApiService := openapi.NewIndividualSubscriptionDocumentApiService()
 	IndividualSubscriptionDocumentApiController := openapi.NewIndividualSubscriptionDocumentApiController(IndividualSubscriptionDocumentApiService)

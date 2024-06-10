@@ -121,6 +121,15 @@ func (s *SubscriptionsCollectionCollectionApiService) CreateSubscription(ctx con
 }
 
 // ------------------------------------------------------------------------------
+// InitConfig - Initialize global variables (config)
+func InitConfig() {
+	err := envconfig.Process("", &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+}
+
+// ------------------------------------------------------------------------------
 // send only accepted events to handle subscription after feasibility check
 func handleSubscriptionEvent(
 	ctx context.Context,
@@ -174,11 +183,6 @@ func fillEventNotification(ctx context.Context,
 ) (CdafEventNotification, error) {
 	// only NETWORK_PERFORMACE - NUM_OF_UE is implemented for the moment
 	var eventNotif CdafEventNotification
-
-	err := envconfig.Process("", &config)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
 
 	switch eventSub.EventRequest.Type {
 
