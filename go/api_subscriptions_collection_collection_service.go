@@ -40,7 +40,7 @@ type MainConfig struct {
 
 // const KUBE = true
 
-const PROM_URL_CADVISOR = "http://192.168.70.160:8010/api/v1.3/docker/"
+const PROM_URL_CADVISOR = "http://192.168.70.1:8010/api/v1.3/docker/"
 
 // const PROM_URL_PROMETHEUS = "http://192.168.14.139:30090/"
 // const USED_CPU_PER_POD = "sum(eagle_pod_container_resource_usage_cpu_cores) by (pod, container, node, namespace, phase)"             //CPU cores in use by a specific container
@@ -254,7 +254,8 @@ func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation,
 }
 
 func getContainerMetrics() []NfLoadLevelInformation {
-	resp, err := http.Get(config.ExtractMetrics.Cadvisor)
+	resp, err := http.Get(PROM_URL_CADVISOR)
+	log.Printf("URL:%s", PROM_URL_CADVISOR)
 	if err != nil {
 		fmt.Printf("Error occurred while fetching container metrics: %v\n", err)
 		return nil
