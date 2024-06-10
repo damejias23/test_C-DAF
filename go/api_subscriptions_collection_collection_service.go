@@ -26,19 +26,25 @@ import (
 	"github.com/google/uuid"
 )
 
-// type MainConfig struct {
-// 	ExtractMetrics struct {
-// 		Cadvisor string `envconfig:"PROM_URL_CADVISOR"`
-// 	}
-// }
+var config MainConfig
 
-const Kube = true
+type MainConfig struct {
+	ExtractMetrics struct {
+		Cadvisor      string `envconfig:"PROM_URL_CADVISOR"`
+		Prometheus    string `envconfig:"PROM_URL_PROMETHEUS"`
+		CpuPerPod     string `envconfig:"USED_CPU_PER_POD"`
+		UsedRamPerPod string `envconfig:"USED_RAM_IN_BYTES_PER_POD"`
+		Kube          bool   `envconfig:"KUBE"`
+	}
+}
 
-const PROM_URL_CADVISOR = "http://192.168.14.85:8010/api/v1.3/docker/"
+// const KUBE = true
 
-const PROM_URL_PROMETHEUS = "http://192.168.14.139:30090/"
-const USED_CPU_PER_POD = "sum(eagle_pod_container_resource_usage_cpu_cores) by (pod, container, node, namespace, phase)"             //CPU cores in use by a specific container
-const USED_RAM_IN_BYTES_PER_POD = "sum(eagle_pod_container_resource_usage_memory_bytes) by (pod, container, node, namespace, phase)" //RAM bytes in use by a specific container
+// const PROM_URL_CADVISOR = "http://192.168.14.85:8010/api/v1.3/docker/"
+
+// const PROM_URL_PROMETHEUS = "http://192.168.14.139:30090/"
+// const USED_CPU_PER_POD = "sum(eagle_pod_container_resource_usage_cpu_cores) by (pod, container, node, namespace, phase)"             //CPU cores in use by a specific container
+// const USED_RAM_IN_BYTES_PER_POD = "sum(eagle_pod_container_resource_usage_memory_bytes) by (pod, container, node, namespace, phase)" //RAM bytes in use by a specific container
 
 type ContainerInfo struct {
 	Id      string   `json:"id"`
@@ -228,9 +234,9 @@ func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation,
 		// if err != nil {
 		// 	return nwPerfList, err
 		// }
-		if Kube == true {
-			use_cpu_per_pod := sendQuery(PROM_URL_PROMETHEUS, USED_CPU_PER_POD, "pod/container/namespace/node/phase")          // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_cpu],[podName, containerName, namespaceName, nodeName, status, used_cpu]...])
-			use_ram_per_pod := sendQuery(PROM_URL_PROMETHEUS, USED_RAM_IN_BYTES_PER_POD, "pod/container/namespace/node/phase") // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_ram],[podName, containerName, namespaceName, nodeName, status, used_ram]...]
+		if config.ExtractMetrics.Kube {
+			use_cpu_per_pod := sendQuery(config.ExtractMetrics.Prometheus, config.ExtractMetrics.CpuPerPod, "pod/container/namespace/node/phase")     // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_cpu],[podName, containerName, namespaceName, nodeName, status, used_cpu]...])
+			use_ram_per_pod := sendQuery(config.ExtractMetrics.Prometheus, config.ExtractMetrics.UsedRamPerPod, "pod/container/namespace/node/phase") // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_ram],[podName, containerName, namespaceName, nodeName, status, used_ram]...]
 
 			nwPerfList = getMetricsForNWDAF(use_cpu_per_pod, use_ram_per_pod)
 		} else {
@@ -248,7 +254,7 @@ func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation,
 }
 
 func getContainerMetrics() []NfLoadLevelInformation {
-	resp, err := http.Get(PROM_URL_CADVISOR)
+	resp, err := http.Get(config.ExtractMetrics.Cadvisor)
 	if err != nil {
 		fmt.Printf("Error occurred while fetching container metrics: %v\n", err)
 		return nil
