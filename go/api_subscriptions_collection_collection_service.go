@@ -246,11 +246,13 @@ func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation,
 		// 	return nwPerfList, err
 		// }
 		if config.ExtractMetrics.Kube {
+			log.Printf("Extract Kubernetes metrics\n")
 			use_cpu_per_pod := sendQuery(config.ExtractMetrics.Prometheus, config.ExtractMetrics.CpuPerPod, "pod/container/namespace/node/phase")     // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_cpu],[podName, containerName, namespaceName, nodeName, status, used_cpu]...])
 			use_ram_per_pod := sendQuery(config.ExtractMetrics.Prometheus, config.ExtractMetrics.UsedRamPerPod, "pod/container/namespace/node/phase") // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_ram],[podName, containerName, namespaceName, nodeName, status, used_ram]...]
 
 			nwPerfList = getMetricsForNWDAF(use_cpu_per_pod, use_ram_per_pod)
 		} else {
+			log.Printf("Extract Dockers metrics\n")
 			nwPerfList = getContainerMetrics()
 		}
 
