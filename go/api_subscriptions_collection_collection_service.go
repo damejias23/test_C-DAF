@@ -18,6 +18,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -30,7 +32,13 @@ import (
 // 	}
 // }
 
+const Kube = true
+
 const PROM_URL_CADVISOR = "http://192.168.14.85:8010/api/v1.3/docker/"
+
+const PROM_URL_PROMETHEUS = "http://192.168.14.139:30090/"
+const USED_CPU_PER_POD = "sum(eagle_pod_container_resource_usage_cpu_cores) by (pod, container, node, namespace, phase)"             //CPU cores in use by a specific container
+const USED_RAM_IN_BYTES_PER_POD = "sum(eagle_pod_container_resource_usage_memory_bytes) by (pod, container, node, namespace, phase)" //RAM bytes in use by a specific container
 
 type ContainerInfo struct {
 	Id      string   `json:"id"`
@@ -220,7 +228,14 @@ func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation,
 		// if err != nil {
 		// 	return nwPerfList, err
 		// }
-		nwPerfList = getContainerMetrics()
+		if Kube == true {
+			use_cpu_per_pod := sendQuery(PROM_URL_PROMETHEUS, USED_CPU_PER_POD, "pod/container/namespace/node/phase")          // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_cpu],[podName, containerName, namespaceName, nodeName, status, used_cpu]...])
+			use_ram_per_pod := sendQuery(PROM_URL_PROMETHEUS, USED_RAM_IN_BYTES_PER_POD, "pod/container/namespace/node/phase") // Returns an array with [[podName, containerName, namespaceName, nodeName, status, used_ram],[podName, containerName, namespaceName, nodeName, status, used_ram]...]
+
+			nwPerfList = getMetricsForNWDAF(use_cpu_per_pod, use_ram_per_pod)
+		} else {
+			nwPerfList = getContainerMetrics()
+		}
 
 	default:
 		// TODO - Implement other NwPerfTypes
@@ -295,6 +310,85 @@ func getContainerMetrics() []NfLoadLevelInformation {
 		}
 
 		containerData = append(containerData, item)
+	}
+
+	return containerData
+}
+
+func sendQuery(address, query, arguments string) [][]string {
+	var res [][]string
+
+	response, err := http.Get(address + "/api/v1/query?query=" + url.QueryEscape(query))
+	if err != nil {
+		return nil
+	}
+
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil
+	}
+
+	var data map[string]interface{}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return nil
+	}
+
+	results := data["data"].(map[string]interface{})["result"].([]interface{})
+
+	if len(results) == 0 {
+		return [][]string{{"0"}}
+	}
+
+	for _, item := range results {
+		var itemVal []string
+		arg := strings.Split(arguments, "/")
+		for _, a := range arg {
+			val := item.(map[string]interface{})["metric"].(map[string]interface{})[a]
+			itemVal = append(itemVal, val.(string))
+		}
+		val := item.(map[string]interface{})["value"].([]interface{})[1].(string)
+		itemVal = append(itemVal, val)
+		res = append(res, itemVal)
+	}
+
+	return res
+}
+
+func getMetricsForNWDAF(use_cpu_per_pod [][]string, use_ram_per_pod [][]string) []NfLoadLevelInformation {
+	var containerData []NfLoadLevelInformation
+	containerType := "AF"
+
+	for i := range use_cpu_per_pod {
+
+		for j := range use_ram_per_pod {
+
+			if (use_cpu_per_pod[i][1] == use_ram_per_pod[j][1]) && (use_cpu_per_pod[i][0] == use_ram_per_pod[j][0]) {
+				nfCpuUsage, err := strconv.Atoi(use_cpu_per_pod[i][5])
+				if err != nil {
+					fmt.Println("Error converting nfCpuUsage string to int:", err)
+					return nil
+				}
+				nfMemoryUsage, err := strconv.Atoi(use_ram_per_pod[j][5])
+				if err != nil {
+					fmt.Println("Error converting nfMemoryUsage string to int:", err)
+					return nil
+				}
+				item := NfLoadLevelInformation{
+					NfType:        NfType(containerType),
+					NfInstanceId:  use_cpu_per_pod[i][0],
+					NfSetId:       use_cpu_per_pod[i][1],
+					NfCpuUsage:    int32(nfCpuUsage),
+					NfMemoryUsage: int32(nfMemoryUsage),
+					//"nfStorageUsage": cpuLoad,
+				}
+
+				containerData = append(containerData, item)
+			}
+
+		}
 	}
 
 	return containerData
