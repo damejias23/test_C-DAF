@@ -377,7 +377,9 @@ func getMetricsForNWDAF(use_cpu_per_pod [][]string, use_ram_per_pod [][]string) 
 		for j := range use_ram_per_pod {
 
 			if (use_cpu_per_pod[i][1] == use_ram_per_pod[j][1]) && (use_cpu_per_pod[i][0] == use_ram_per_pod[j][0]) {
-				nfCpuUsage, err := strconv.Atoi(use_cpu_per_pod[i][5])
+				// nfCpuUsage, err := strconv.Atoi(use_cpu_per_pod[i][5])
+				nfCpuUsage, err := strconv.ParseFloat(use_cpu_per_pod[i][5], 64)
+				nfCpuUsage = nfCpuUsage * 100
 				if err != nil {
 					fmt.Println("Error converting nfCpuUsage string to int:", err)
 					return nil
