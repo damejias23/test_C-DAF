@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/kelseyhightower/envconfig"
 )
 
 var config MainConfig
@@ -173,6 +174,12 @@ func fillEventNotification(ctx context.Context,
 ) (CdafEventNotification, error) {
 	// only NETWORK_PERFORMACE - NUM_OF_UE is implemented for the moment
 	var eventNotif CdafEventNotification
+
+	err := envconfig.Process("", &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	switch eventSub.EventRequest.Type {
 
 	case CDAFEVENT_REPORT_RESOURCE_USAGE:
