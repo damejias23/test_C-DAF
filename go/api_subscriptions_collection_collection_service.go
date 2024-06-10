@@ -255,6 +255,7 @@ func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation,
 
 func getContainerMetrics() []NfLoadLevelInformation {
 	resp, err := http.Get(config.ExtractMetrics.Cadvisor)
+	log.Printf("URL: %s\n", config.ExtractMetrics.Cadvisor)
 	if err != nil {
 		fmt.Printf("Error occurred while fetching container metrics: %v\n", err)
 		return nil
