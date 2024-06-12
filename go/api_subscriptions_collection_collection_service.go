@@ -246,6 +246,7 @@ func getContainerData(eventSub CdafEventSubscription) ([]NfLoadLevelInformation,
 		} else {
 			log.Printf("Extract Dockers metrics\n")
 			nwPerfList = getContainerMetrics()
+			log.Printf("Container: %s", nwPerfList)
 		}
 
 	default:
